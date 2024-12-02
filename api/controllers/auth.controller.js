@@ -50,9 +50,42 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Email and password are required." });
+    }
+
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid Credentials." });
+    }
+
+    // Check password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid Credentials." });
+    }
+
+    // Generate a JWT (example, requires jsonwebtoken library)
+    // const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    console.log("User logged in:", user);
+    res.json({ message: "User logged in successfully!" });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const logout = (req, res) => {
-  
+  // Add session invalidation or token blacklist 
 };
