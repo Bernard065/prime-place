@@ -4,6 +4,8 @@ import authRouter from "./routes/auth.route.js";
 
 const app = express();
 
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // Use routes
 app.use("/api/posts", postRouter);
